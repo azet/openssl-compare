@@ -106,8 +106,8 @@ openssl-1.0.1g and openssl-0.9.8u differ
 #### Using different compiler versions
 Manually set the appropriate environment variables to the paths of your prefered compiler(s). Or take a look at how Environment modules (in particular Lmod) work. 
 
-[https://en.wikipedia.org/wiki/Environment_Modules_(software)]()    
-[https://github.com/TACC/Lmod]()
+https://en.wikipedia.org/wiki/Environment_Modules_(software)
+https://github.com/TACC/Lmod
 
 ### Todo
 * per file/branch diff

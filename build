@@ -6,17 +6,25 @@
 source common.inc
 
 function buildjob() {
+	local ret=0
 	gcc -v
 	[ -f Configure ] 	&& ./Configure
 	./config		|| return
-	time make -j$(nproc)	|| return
+	time make -j$(nproc)	|| ret=$?
 	[ -f util/selftest.pl ] && perl util/selftest.pl
-	return 0
+	return ${ret}
+	# some OpenSSL versions (such as 0.9.8 and 1.0.1) will produce
+	# compile time errors, causing make to exit with code 2. ensure
+	# that the selftest is run anyway - if available.
+	# Configure will list all available plattforms that are supported
+	# in a given OpenSSL version.
 }
+
+[ -d work ] || fail "no 'work/' directory exists"
 
 timestamp=$(date --rfc-3339=seconds | sed 's/ /_/')
 echo "${banner} full log in work/OPENSSLDIR/buildlog-${timestamp}.log"
-for dir in work/openssl*/; do
+for dir in work/*/; do
 	echo -ne "\tbuilding in ${dir} "
 	cd ${dir}
 	buildjob &> buildlog-${timestamp}.log

@@ -1,7 +1,7 @@
 ## openssl-compare
 Download, build and compare OpenSSL versions for testing, fuzzing [...] 
 
-## Howto
+### Howto
 initially download and extract all OpenSSL tarballs:
 ```bash
 ./init # optionally build with -b
@@ -11,17 +11,37 @@ build all OpenSSL versions:
 ./build
 ```
 
+test a Ciphersuite among all versions:
+```bash
+./cmp_ciphersuite -s AES-GCM
+
+[...]
+```
+
+same thing with diff(1) output:
+```bash
+./cmp_ciphersuite -s AES-GCM -d
+
+[...]
+```
 "enjoy".
 
 (more coming soon)
 
+**Not all OpenSSL versions will compile out of the box with your default system GCC and glibc!**
 
-## Todo
+#### Using different compiler versions
+Manually set the appropriate environment variables to the paths of your prefered compiler(s). Or take a look at how Environment modules (in particular Lmod) work. 
+
+[https://en.wikipedia.org/wiki/Environment_Modules_(software)]()    
+[https://github.com/TACC/Lmod]()
+
+### Todo
 * cipherstring testing with multiple versions
 * per file/branch diff
 * proper doc
 
-## License
+### License
 ```
 The MIT License (MIT)
 

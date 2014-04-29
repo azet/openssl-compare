@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+#
+# Compare how a Ciphersuite is interpreted by
+# different versions of OpenSSL
+#
+
+source common.inc
+
+function usage() {
+	echo -e "  Usage: ./cmp_ciphersuite [-s CIPHERSUITE] [-d]\n"
+	echo -e "\t Tests Ciphersuites among different OpenSSL versions\n"
+	echo -e "\t Options:"
+	echo -e "\t -s \t a CIPHERSUITE to be tested"
+	echo -e "\t -d \t diff all results"
+	echo ; exit 1
+}
+
+[[ $# -lt 1 ]] && usage
+while getopts ":ds:" opts; do
+	case ${opts} in
+		s)	suite=$OPTARG ;;
+		d) 	diff=true ;;
+		*|?|h)	usage ;;
+	esac
+done
+
+[ -d work ] || fail "no 'work/' directory exists"
+
+for ossl in work/*/apps/openssl; do
+	echo "${banner} testing Ciphersuite: $(bold ${suite}) on ${ossl}"
+	${ossl} ciphers ${suite} -v 	\
+		| sed '/^WARNING/ d'	\
+		| sort 			\
+		| tee /tmp/${ossl//\//_}
+done
+
+if [ ${diff} ]; then
+	to_diff=()
+	for k in /tmp/work_*; do
+		to_diff+="${k} "
+	done
+	for v in ${to_diff[@]}; do
+		diff -q --from-file ${v} ${to_diff[@]}		\
+			| sed 's/Files \/tmp\/work\_//g'	\
+			| sed 's/\/tmp\/work\_//g'		\
+			| sed 's/_apps_openssl//g'
+	done
+fi
+rm /tmp/work_*
+

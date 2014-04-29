@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+#
+# Download and optionally build OpenSSL versions
+# for comparison, testing, fuzzing [...]
+#
+
+#set -x
+
+source common.inc
+
+function verify_tarballs() {
+	# OpenSSL fact: improper use of md5sum. you cannot mass verify tarballs
+	# http://nopaste.narf.at/show/DL0GE8RcTKH0BZO3vLux/
+	for file in work/*.tar.gz; do
+		local sum_local=$(md5sum ${file} | awk '{ print $1 }')
+		local sum_remote=$(cat ${file}.md5 2>/dev/null | sed 's/.*=\ //')
+		echo -ne "\t${file}:"
+		if [[ ${sum_local} == ${sum_remote} ]]; then
+			echo -e "   verified"		
+		else
+			echo -e "   $(tput bold)NOT$(tput sgr0) verified"
+		fi 
+	done
+	# since not all tarballs ship with checksums we don't fail
+}
+
+function extract_tarballs() {
+        for file in work/*.tar.gz; do
+                echo -ne "\textracting: ${file}"
+		tar xfiz ${file} -C "work/" || fail "could not extract ${file}"
+		echo -e "\t\t$(tput bold)DONE$(tput sgr0)"
+	done
+}
+
+while getopts ":bch" opts; do
+	case ${opts} in
+		b) 	build=true ;;
+		c) 	clean=true ;;
+		?|h) 
+			echo -e "  Usage: init [-b] [-c]\n"
+			echo -e "\t Options:"
+			echo -e "\t -b\t Build as well"
+			echo -e "\t -c\t Clean all build dirs (!)"
+			echo ; exit 1
+		;;
+	esac
+done
+
+if [ ${clean} ]; then
+	rm -rf "work/" || fail "could not remove 'work/'"
+fi
+
+if [ ! -d "work/" ]; then
+	mkdir -p "work/" || fail "could not create 'work/' directory"
+fi
+
+echo "${banner} downloading all OpenSSL sources - this might take a while"
+#wget -r -l2 -nd -Nc -A "*.tar.gz" -A "*.md5" -P "work/" \
+#	"https://www.openssl.org/source" &>/dev/null || fail "could not download OpenSSL"
+
+echo "${banner} verifying tarballs:"
+#verify_tarballs
+
+echo "${banner} extracting tarballs:"
+#extract_tarballs
+
+if [ ${build} ]; then
+	source build
+fi
+
+echo "${banner} done."

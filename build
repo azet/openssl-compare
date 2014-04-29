@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# build all the things
+#
+
+source common.inc
+
+for folder in work/openssl*/; do
+	echo "${banner} building in ${folder}"
+	cd ${folder}
+	./config || fail "configure failed"
+	make -j4 || fail "compilation failed"
+	cd -
+	echo "${banner} done with ${folder}"
+done
+

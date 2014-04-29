@@ -4,7 +4,7 @@
 #
 
 banner="openssl-compare::$(basename ${0}) >>"
-fail() {
+function fail() {
         # generic fail function for bash scripts
         # arg: 1 - custom error message
         # arg: 2 - file
@@ -16,4 +16,8 @@ fail() {
         exit 1
 } ; trap 'fail "caught signal"' HUP KILL QUIT
 
+function bold() {
+	local text=${1}
+	echo "$(tput bold)${text}$(tput sgr0)"
+}
 

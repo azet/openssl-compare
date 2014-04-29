@@ -5,18 +5,26 @@
 
 source common.inc
 
+function buildjob() {
+	gcc -v
+	[ -f Configure ] 	&& ./Configure
+	./config		|| return
+	time make -j$(nproc)	|| return
+	[ -f util/selftest.pl ] && perl util/selftest.pl
+	return 0
+}
+
 timestamp=$(date --rfc-3339=seconds | sed 's/ /_/')
-for folder in work/openssl*/; do
-	echo -ne "${banner} building in ${folder}"
-	time (	
-		cd ${folder}
-		gcc -v
-		[[ -f ./Configure ]] && ./Configure
-		./config 	|| echo "configure failed"
-		make -j$(nproc)	|| echo "compilation failed"
-	) &> ${folder}/buildlog-${timestamp}.log \
-	  || fail "compilation of ${folder} failed"
-	wait
-	echo -e "\t\t$(tput bold)DONE$(tput sgr0)"
+echo "${banner} full log in work/OPENSSLDIR/buildlog-${timestamp}.log"
+for dir in work/openssl*/; do
+	echo -ne "\tbuilding in ${dir} "
+	cd ${dir}
+	buildjob &> buildlog-${timestamp}.log
+	if [ "$?" -gt 0 ]; then
+		echo -e "\t\t$(bold FAIL)"
+	else
+		echo -e "\t\t$(bold DONE)"
+	fi
+	cd - &>/dev/null
 done
 

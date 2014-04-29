@@ -9,23 +9,26 @@ function verify_tarballs() {
 	# OpenSSL fact: improper use of md5sum. you cannot mass verify tarballs
 	# http://nopaste.narf.at/show/DL0GE8RcTKH0BZO3vLux/
 	for file in work/*.tar.gz; do
+		if [ ! -f ${file}.md5 ]; then
+			echo -e "\t${file}: $(bold "NO MD5 SIGNATURE")"
+			continue
+		fi
 		local sum_local=$(md5sum ${file} | awk '{ print $1 }')
 		local sum_remote=$(cat ${file}.md5 2>/dev/null | sed 's/.*=\ //')
-		echo -ne "\t${file}:"
+		echo -ne "\t${file}: "
 		if [[ ${sum_local} == ${sum_remote} ]]; then
-			echo -e "   verified"		
+			echo "$(bold verified)"
 		else
-			echo -e "   $(tput bold)NOT$(tput sgr0) verified"
+			echo "$(bold NOT) matching"
 		fi 
 	done
-	# since not all tarballs ship with checksums we don't fail
 }
 
 function extract_tarballs() {
         for file in work/*.tar.gz; do
                 echo -ne "\textracting: ${file}"
 		tar xfiz ${file} -C "work/" || fail "could not extract ${file}"
-		echo -e "\t\t$(tput bold)DONE$(tput sgr0)"
+		echo -e "\t\t$(bold DONE)"
 	done
 }
 
@@ -64,3 +67,4 @@ extract_tarballs
 [[ ${build} ]] && source build
 
 echo "${banner} done."
+

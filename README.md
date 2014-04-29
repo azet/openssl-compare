@@ -6,9 +6,25 @@ initially download and extract all OpenSSL tarballs:
 ```bash
 ./init # optionally build with -b
 ```
-build all OpenSSL versions:
+same as above AND build all OpenSSL versions:
 ```bash
+./init -b 
+
+# alternatively:
 ./build
+```
+
+clean all OpenSSL versions:
+```bash
+./init -c
+
+# alternatively:
+./clean
+```
+
+remove all OpenSSL versions:
+```
+./init -w
 ```
 
 test a Ciphersuite among all versions:

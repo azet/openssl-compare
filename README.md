@@ -2,15 +2,15 @@
 Download, build and compare OpenSSL versions for testing, fuzzing [...] 
 
 ### Howto
-initially download and extract all OpenSSL tarballs:
+initially download, verify and extract all OpenSSL tarballs:
 ```bash
-./init # optionally build with -b
-```
-same as above AND build all OpenSSL versions:
-```bash
-./init -b 
+./init 
 
-# alternatively:
+# alternatively download, verify, extract and build:
+./init -b
+```
+build all OpenSSL versions:
+```bash
 ./build
 ```
 
@@ -72,14 +72,7 @@ openssl-0.9.8o and openssl-1.0.0i differ
 openssl-0.9.8o and openssl-1.0.0j differ
 openssl-0.9.8o and openssl-1.0.0k differ
 openssl-0.9.8o and openssl-1.0.0l differ
-openssl-0.9.8o and openssl-1.0.1a differ
-openssl-0.9.8o and openssl-1.0.1 differ
-openssl-0.9.8o and openssl-1.0.1b differ
-openssl-0.9.8o and openssl-1.0.1-beta1 differ
-openssl-0.9.8o and openssl-1.0.1-beta2 differ
-openssl-0.9.8o and openssl-1.0.1-beta3 differ
-openssl-0.9.8o and openssl-1.0.1c differ
-openssl-0.9.8o and openssl-1.0.1e differ
+[...]
 openssl-0.9.8o and openssl-1.0.1f differ
 openssl-0.9.8o and openssl-1.0.1g differ
 openssl-0.9.8o and openssl-1.0.2-beta1 differ
@@ -87,6 +80,21 @@ openssl-0.9.8p and openssl-1.0.0a differ
 openssl-0.9.8p and openssl-1.0.0 differ
 openssl-0.9.8p and openssl-1.0.0b differ
 openssl-0.9.8p and openssl-1.0.0-beta5 differ
+[...]
+openssl-1.0.1f and openssl-1.0.1b differ
+openssl-1.0.1f and openssl-1.0.1-beta1 differ
+openssl-1.0.1f and openssl-1.0.1-beta2 differ
+openssl-1.0.1f and openssl-1.0.1-beta3 differ
+openssl-1.0.1f and openssl-1.0.1c differ
+openssl-1.0.1f and openssl-1.0.2-beta1 differ
+openssl-1.0.1f and openssl-fips-1.1.2 differ
+openssl-1.0.1g and openssl-0.9.8o differ
+openssl-1.0.1g and openssl-0.9.8p differ
+openssl-1.0.1g and openssl-0.9.8q differ
+openssl-1.0.1g and openssl-0.9.8r differ
+openssl-1.0.1g and openssl-0.9.8s differ
+openssl-1.0.1g and openssl-0.9.8t differ
+openssl-1.0.1g and openssl-0.9.8u differ
 [...]
 ```
 "enjoy".
@@ -102,7 +110,6 @@ Manually set the appropriate environment variables to the paths of your prefered
 [https://github.com/TACC/Lmod]()
 
 ### Todo
-* cipherstring testing with multiple versions
 * per file/branch diff
 * proper doc
 

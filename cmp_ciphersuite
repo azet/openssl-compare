@@ -28,9 +28,9 @@ done
 
 for ossl in work/*/apps/openssl; do
 	echo "${banner} testing Ciphersuite: $(bold ${suite}) on ${ossl}"
-	${ossl} ciphers ${suite} -v 	\
-		| sed '/^WARNING/ d'	\
-		| sort 			\
+	${ossl} ciphers ${suite} -v 2>&1	\
+		| sed '/WARNING/d'		\
+		| sort 				\
 		| tee /tmp/${ossl//\//_}
 done
 

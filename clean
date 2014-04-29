@@ -10,7 +10,8 @@ source common.inc
 for dir in work/*/; do
 	echo -ne "\tcleaning ${dir} "
 	cd ${dir}
-	make clean && echo -e "\t\t$(bold DONE)"
+	make clean &>/dev/null 
+	echo -e "\t\t$(bold CLEAN) (where possible)"
 	cd - &>/dev/null
 done
 

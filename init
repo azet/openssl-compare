@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 #
-# Download and optionally build OpenSSL versions
-# for comparison, testing, fuzzing [...]
+# Download, build and compare OpenSSL versions for testing, fuzzing [...] 
 #
-
-#set -x
 
 source common.inc
 
@@ -55,17 +52,15 @@ if [ ! -d "work/" ]; then
 fi
 
 echo "${banner} downloading all OpenSSL sources - this might take a while"
-#wget -r -l2 -nd -Nc -A "*.tar.gz" -A "*.md5" -P "work/" \
-#	"https://www.openssl.org/source" &>/dev/null || fail "could not download OpenSSL"
+wget -r -l2 -nd -Nc -A "*.tar.gz" -A "*.md5" -P "work/" \
+	"https://www.openssl.org/source" &>/dev/null || fail "could not download OpenSSL"
 
 echo "${banner} verifying tarballs:"
-#verify_tarballs
+verify_tarballs
 
 echo "${banner} extracting tarballs:"
-#extract_tarballs
+extract_tarballs
 
-if [ ${build} ]; then
-	source build
-fi
+[[ ${build} ]] && source build
 
 echo "${banner} done."

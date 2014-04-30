@@ -11,24 +11,28 @@ function usage() {
 	echo -e "\t Tests Ciphersuites among different OpenSSL versions\n"
 	echo -e "\t Options:"
 	echo -e "\t -s \t a CIPHERSUITE to be tested"
+	echo -e "\t -p \t list cipher preferences"
 	echo -e "\t -d \t diff all results"
 	echo ; exit 1
 }
 
-[[ $# -lt 1 ]] && usage
-while getopts ":ds:" opts; do
+[[ $# -lt 2 ]] && usage
+while getopts ":dsp:" opts; do
 	case ${opts} in
 		s)	suite=$OPTARG ;;
 		d) 	diff=true ;;
+		p)	pref=true ;;
 		*|?|h)	usage ;;
 	esac
 done
 
 [ -d work ] || fail "no 'work/' directory exists"
 
+[[ ${pref} ]] && ossl_args="cipherlist" 
+
 for ossl in work/*/apps/openssl; do
 	echo "${banner} testing Ciphersuite: $(bold ${suite}) on ${ossl}"
-	${ossl} ciphers ${suite} -v 2>&1	\
+	${ossl} ciphers ${ossl_args} ${suite} -v 2>&1	\
 		| sed '/WARNING/d'		\
 		| sort 				\
 		| tee /tmp/${ossl//\//_}

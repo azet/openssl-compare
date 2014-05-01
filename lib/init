@@ -3,7 +3,7 @@
 # Download, build and compare OpenSSL versions for testing, fuzzing [...] 
 #
 
-source common.inc
+source lib/common.inc
 
 function verify_tarballs() {
 	# OpenSSL fact: improper use of md5sum. you cannot mass verify tarballs
@@ -32,16 +32,12 @@ function extract_tarballs() {
 	done
 }
 
-while getopts ":bch" opts; do
+while getopts ":h" opts; do
 	case ${opts} in
-		b) 	build=true ;;
-		c) 	clean=true ;;
 		w)	wipe=true ;;
 		?|h) 
-			echo -e "  Usage: ./init [-b] [-c] [-w]\n"
+			echo -e "  Usage: ./init [-w]\n"
 			echo -e "\t Options:"
-			echo -e "\t -b\t Build as well"
-			echo -e "\t -c\t Clean all build dirs"
 			echo -e "\t -w\t Wipe (remove) all build dirs"
 			echo ; exit 1
 		;;
@@ -50,11 +46,6 @@ done
 
 if [ ${wipe} ]; then
 	rm -rf "work/" || fail "could not remove 'work/'"
-	exit
-fi
-
-if [ ${clean} ]; then
-	source clean
 	exit
 fi
 
@@ -71,8 +62,6 @@ verify_tarballs
 
 echo "${banner} extracting tarballs:"
 extract_tarballs
-
-[[ ${build} ]] && source build
 
 echo "${banner} done."
 

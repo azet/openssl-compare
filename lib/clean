@@ -3,7 +3,7 @@
 # Clean all build directories
 #
 
-source common.inc
+source lib/common.inc
 
 [ -d work ] || fail "no 'work/' directory exists"
 

@@ -4,7 +4,7 @@
 # different versions of OpenSSL
 #
 
-source common.inc
+source lib/common.inc
 
 function usage() {
 	echo -e "  Usage: ./cmp_ciphersuite [-s CIPHERSUITE] [-d]\n"

@@ -3,7 +3,7 @@
 # build all the things
 #
 
-source common.inc
+source lib/common.inc
 
 function buildjob() {
 	local ret=0

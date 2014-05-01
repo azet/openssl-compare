@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+cmd=${1}
+shift
+
+if [ -f lib/${cmd} ]; then
+	source lib/${cmd} $@
+else
+	echo -e "  Usage: ./openssl-compare [subcommand]\n"
+	echo -e "\t Subcommands:"
+	echo -e "\t    init        - initialize comparison setup"
+	echo -e "\t                  download, verify and extract OpenSSL tarballs"
+	echo -e "\t                  <see [init -h] for more options>"
+	echo -e "\t    build       - build all available OpenSSL versions"
+	echo -e "\t    clean       - clean all OpenSSL build directories"
+	echo -e "\t    ciphersuite - compare a ciphersuite among all OpenSSL versions"
+	echo -e "\t                  <see [ciphersuite -h] for more options>"
+	echo ; exit 1
+fi
+exit
+

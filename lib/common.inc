@@ -3,7 +3,7 @@
 # common functions (error handling et cetera)
 #
 
-banner="openssl-compare::$(basename ${0}) >>"
+banner="openssl-compare >>"
 function fail() {
         # generic fail function for bash scripts
         # arg: 1 - custom error message

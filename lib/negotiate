@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+#
+# test TLS negotiation of ciphersuites and preference
+#
+
+source lib/common.inc
+
+port=4223
+
+function usage() {
+        echo -e "  Usage: ./openssl-compare negotiate [-s CIPHERSUITE]\n"
+        echo -e "\t Negotiate TLS ciphersuites and test preference\n"
+        echo -e "\t Options:"
+        echo -e "\t -s \t a CIPHERSUITE to be tested"
+        echo ; exit 1
+}
+
+function prepare_BIO_printf_wrapper() {
+	# since output to stdout is buffered and OpenSSL's BIO_*printf 
+	# and BIO_write functions do not flush directly, we need to do 
+	# a quick LD_PRELOAD hack to be able to redirect debugging output 
+	# to a file. which is annoying and cost me some hours to figure 
+	# out and implement properly,..
+	# this code disables buffering of stdout within BIO_printf:
+	gcc -Wall -pedantic -fPIC -ldl -shared -o lib/bio_printf_wrapper.so \
+	-nostartfiles -Ofast || fail "could not compile LD_PRELOAD code" << EOF
+#include <stdio.h>
+#include <stdarg.h>
+#include <openssl/bio.h>
+
+/* true hax0rz vote hypnotoad */
+
+int BIO_printf(BIO *bio, const char *format, ...) {
+	va_list args;
+	int ret;
+	
+	setbuf(stdout, NULL);
+
+	va_start(args, format);
+	ret = vprintf(format, args);
+	va_end(args);
+
+	return(ret);
+}
+EOF
+}
+
+function tls_listener() {
+	local openssl=${1}
+	local suite=${2}
+	local runpath=${PWD}
+
+	${openssl} version &> /tmp/${openssl//\//_}_srv
+	
+	{	cd $(dirname ${openssl})
+		LD_PRELOAD=${runpath}/lib/bio_printf_wrapper.so		\
+		./openssl s_server -state -debug -msg -accept ${port} 	\
+			           -cipher ${suite} -serverpref 	\
+				   -cert ${runpath}/share/cert.pem    	\
+				   -key ${runpath}/share/key.pem	\
+				   &>> /tmp/${openssl//\//_}_srv
+	} |: &
+	# while redirecting and sending a process to the background
+	# openssl(1) might hang after a few milliseconds, this piped
+	# NOP `|:` seems to prevent this from happening every time
+}
+
+function tls_client() {
+	local openssl=${1}
+	timeout 2 ${openssl} s_client -connect localhost:${port}	\
+ 		            	      -state -debug -msg 		\
+				      &> /tmp/${openssl//\//_}_cl	&
+}
+
+[[ $# -lt 2 ]] && usage
+while getopts ":s:" opts; do
+	case ${opts} in
+		s)	suite=$OPTARG ;;
+		*|?|h)	usage ;;
+	esac
+done
+
+[ -f lib/bio_printf_wrapper.so ] || prepare_BIO_printf_wrapper
+
+for openssl in work/*/apps/openssl; do
+	[ -f ${openssl} ] || continue
+	
+	echo "${banner} starting s_server for ${openssl}"
+	tls_listener ${openssl} ${suite}
+	
+	sleep 0.8
+	
+	echo "${banner} starting s_client for ${openssl}"
+	tls_client ${openssl}
+	
+	sleep 0.8
+
+	echo "${banner} killing off s_server listener:"
+	disown
+	killall openssl
+
+	echo "${banner} negotiated ciphersuite:"
+	grep --binary-files=text -i 'shared ciphers' \
+	     -A1 /tmp/${openssl//\//_}_srv
+done
+

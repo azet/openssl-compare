@@ -7,7 +7,7 @@
 source lib/common.inc
 
 function usage() {
-	echo -e "  Usage: ./cmp_ciphersuite [-s CIPHERSUITE] [-d]\n"
+	echo -e "  Usage: ./openssl-compare ciphersuite [-s CIPHERSUITE] [-d]\n"
 	echo -e "\t Tests Ciphersuites among different OpenSSL versions\n"
 	echo -e "\t Options:"
 	echo -e "\t -s \t a CIPHERSUITE to be tested"
@@ -16,11 +16,10 @@ function usage() {
 }
 
 [[ $# -lt 2 ]] && usage
-while getopts ":dps:" opts; do
+while getopts ":ds:" opts; do
 	case ${opts} in
 		s)	suite=$OPTARG ;;
 		d) 	diff=true ;;
-		p)	ossl_args="cipherlist" ;;
 		*|?|h)	usage ;;
 	esac
 done

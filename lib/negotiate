@@ -67,8 +67,10 @@ function tls_listener() {
 
 function tls_client() {
 	local openssl=${1}
+	local suite=${2}
 	timeout 2 ${openssl} s_client -connect localhost:${port}	\
  		            	      -state -debug -msg 		\
+				      -cipher ${suite}	 		\
 				      &> /tmp/${openssl//\//_}_cl	&
 }
 
@@ -91,7 +93,7 @@ for openssl in work/*/apps/openssl; do
 	sleep 0.8
 	
 	echo "${banner} starting s_client for ${openssl}"
-	tls_client ${openssl}
+	tls_client ${openssl} ${suite}
 	
 	sleep 0.8
 

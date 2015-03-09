@@ -8,9 +8,9 @@ source lib/common.inc
 function buildjob() {
 	local ret=0
 	gcc -v
-	[ -f Configure ] 	&& ./Configure
-	./config		|| return
-	time make -j$(nproc)	|| ret=$?
+	[ -f Configure ] && ./Configure
+	./config	 || return
+	time make  	 || ret=$?
 	[ -f util/selftest.pl ] && perl util/selftest.pl
 	return ${ret}
 	# some OpenSSL versions (such as 0.9.8 and 1.0.1) will produce
